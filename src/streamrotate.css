@@ -1,0 +1,65 @@
+.streamrotate-item {
+    position: absolute;
+    float: none;
+    z-index: 10;
+    opacity: 0;
+    -webkit-transition: opacity 0.5s;
+    -moz-transition: opacity 0.5s;
+    transition: opacity 0.5s;
+}
+.streamrotate-item.active {
+    z-index: 11;
+    opacity: 1;
+}
+.streamrotate-dot {
+    display: inline-block;
+    width: 0.7em;
+    height: 0.7em;
+    border-radius: 50%;
+    background-color: #CCC;
+    margin: 0 0.5em;
+    cursor: pointer;
+    -webkit-transition: color 0.2s, transform 0.5s;
+    -moz-transition: color 0.2s, transform 0.5s;
+    -transition: color 0.2s, transform 0.5s;
+}
+.streamrotate-dot.active {
+    background-color: #48A7FE;
+    transform: scale(1.5);
+}
+.streamrotate-dots-nav {
+    text-align: center;
+    padding: 15px 0;
+}
+.streamrotate-nav {
+    position: absolute;
+    top: 50%;
+    width: 30px;
+    height: 30px;
+    font-size: 30px;
+    cursor: pointer;
+    font-weight: bolder;
+    margin: -40px 0;
+    color: #CCC;
+    -webkit-transition: color 0.2s;
+    -moz-transition: color 0.2s;
+    -transition: color 0.2s;
+}
+.streamrotate-nav:hover {
+    color: #48A7FE;
+}
+.streamrotate-nav-left {
+    left: 0;
+}
+.streamrotate-nav-right {
+    right: 0;
+}
+.streamrotate-nav-left:before {
+    content: '<';
+}
+.streamrotate-nav-right:after {
+    content: '>';
+}
+.streamrotate-container {
+    position: relative;
+}
