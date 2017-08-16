@@ -10,6 +10,19 @@
     
     var app = {c: {}, v: {}, m: {}};
     var methods = {
+        /**
+         * 
+         * @param {object} opts An object in the form<pre>
+         *  {
+         *      autoRotateSpeed: int [optional] Number of seconds between each slide. 0 (default) to not rotate automatically,
+         *      selector: string A selector used to select the objects being carouselled,
+         *      showArrows: boolean [optional] <b>True</b> (default) to show left and right arrows,
+         *      hideArrowsForOneItem: boolean [optional] <b>True</b> (default) to hide arrows from showing if there is only one item
+         *      showDots: boolean [optional] <b>True</b> (default) to show dots under the carousel for navigation,
+         *      hideDotsForOneItem: boolean [optional] <b>True</b> (default) to hide dots from showing if there is only one item
+         *  }
+         * @returns {jQuery}
+         */
         init: function (opts) {
             var T = $(this);
             if (T.data('streamrotate') || ! T.length) {
@@ -28,16 +41,20 @@
                 rotateInterval: null,
                 s: $.extend({
                     autoRotateSpeed: 0,
-                    height: 0,
-                    selector: null
+                    selector: null,
+                    showArrows: true,
+                    hideArrowsForOneItem: true,
+                    showDots: true,
+                    hideDotsForOneItem: true
                 }, opts)
             };
             if (!data.s.selector) {
                 $.error('streamRotate: no selector specified');
-                return;
+                return T;
             }
             T.data('streamrotate', data);
             app.v.initView.call(T, data);
+            return T;
         }
     };
     
@@ -78,7 +95,13 @@
         var T = this;
         var direction = backwards ? -1 : 1;
         var data = T.data('streamrotate');
-        var pos = data.position + direction > data.length - 1 ? 0 : data.position + direction;
+        var pos = 0;
+        if (backwards) {
+            pos = data.position + direction < 0 ? data.length - 1 : data.position + direction;
+        } else {
+            pos = data.position + direction > data.length - 1 ? 0 : data.position + direction;
+        }
+        
         data.position = pos;
         // Now set visibility
         app.v.display.call(T, pos);
@@ -100,6 +123,7 @@
             app.c.navigate.call(T, true);
         });
         
+        // The user clicks on a dot
         $('.streamrotate-dot', T).unbind('click.goto').on('click.goto', function () {
             var index = $('.streamrotate-dot', T).index(this);
             app.v.display.call(T, index);
@@ -117,15 +141,20 @@
         var length = data.length = $(settings.selector, T).addClass('streamrotate-item').length;
         $('.streamrotate-item', T).eq(0).addClass('active');
         T.addClass('streamrotate-container').append(getHtml('div', null, null, 'streamrotate-main-items'));
-        $('.streamrotate-main-items', T).append($(settings.selector, T)).height(settings.height);
-        // Render the dots
-        $(getHtml('div', null, null, 'streamrotate-dots-nav')).insertAfter($('.streamrotate-main-items', T));
-        for (i = 0; i < length; i++) {
-            $('.streamrotate-dots-nav').append(getHtml('span', null, null, 'streamrotate-dot' + (i === 0 ? ' active' : '')));
+        
+        if (settings.showDots && !(length === 1 && settings.hideDotsForOneItem)) {
+            // Render the dots
+            $(getHtml('div', null, null, 'streamrotate-dots-nav')).insertAfter($('.streamrotate-main-items', T));
+            for (i = 0; i < length; i++) {
+                $('.streamrotate-dots-nav', T).append(getHtml('span', null, null, 'streamrotate-dot' + (i === 0 ? ' active' : '')));
+            }
         }
-        // Render the LR navigations
-        T.append(getHtml('span', null, null, 'streamrotate-nav streamrotate-nav-left'));
-        T.append(getHtml('span', null, null, 'streamrotate-nav streamrotate-nav-right'));
+        
+        if (settings.showArrows && !(length === 1 && settings.hideArrowsForOneItem)) {
+            // Render the LR navigations
+            T.append(getHtml('span', null, null, 'streamrotate-nav streamrotate-nav-left'));
+            T.append(getHtml('span', null, null, 'streamrotate-nav streamrotate-nav-right'));
+        }
         app.c.initAutoRotate.call(T);
         app.c.bindEvents.call(T);
     };
